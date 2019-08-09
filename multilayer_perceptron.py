@@ -47,7 +47,5 @@ def main(data_file, sep, labels_col_idx):
     out2 = model.add(FC(out1, 4, "sigmoid"))
     model.add(Output(out2, 2, "sigmoid"))
 
-    print(model.layers[1].activation)
-
 if __name__ == "__main__":
     main()

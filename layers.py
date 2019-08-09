@@ -3,11 +3,11 @@ from perceptrons import Perceptron
 
 class Input(object):
     def __init__(self, shape):
-        self.width = shape[0]
+        self.width = shape[-1]
 
 class Output(object):
-    def __init__(self, in_shape, out_shape, activation):
-        self.width = out_shape
+    def __init__(self, in_shape, out_dim, activation):
+        self.width = out_dim
         self.perceptrons = [Perceptron(in_shape)]
         self.activation = activations_dict[activation]
 
@@ -18,8 +18,12 @@ class FC(object):
         self.activation = activations_dict[activation]
 
 def sigmoid(x):
-    return 1 / (1 - exp(-x))
+    return 1 / (1 + exp(-x))
+
+def relu(x):
+    return x if x > 0 else 0
 
 activations_dict = {
   "sigmoid": sigmoid,
+  "relu": relu
 }

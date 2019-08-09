@@ -1,6 +1,8 @@
 import click
+from math import isnan
 import numpy as np
 from model import Model
+from layers import Input, Output, FC
 
 def read_data(data_file, sep, labels_col_idx):
     with open(data_file, mode="r") as f:
@@ -38,7 +40,14 @@ def str_to_int(Y):
 @click.option("-l", "labels_col_idx", default=0, help="labels column index")
 def main(data_file, sep, labels_col_idx):
     X, Y = read_data(data_file, sep, labels_col_idx)
+
     model = Model()
+    out0 = model.add(Input(X.shape))
+    out1 = model.add(FC(out0, 8, "sigmoid"))
+    out2 = model.add(FC(out1, 4, "sigmoid"))
+    model.add(Output(out2, 2, "sigmoid"))
+
+    print(model.layers[1].activation)
 
 if __name__ == "__main__":
     main()

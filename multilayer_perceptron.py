@@ -37,15 +37,19 @@ def str_to_int(Y):
 @click.command()
 @click.argument("data_file", default="data.csv", type=click.Path(exists=True))
 @click.option("-sep", "sep", default=",", help="csv separator")
-@click.option("-l", "labels_col_idx", default=0, help="labels column index")
-def main(data_file, sep, labels_col_idx):
-    X, Y = read_data(data_file, sep, labels_col_idx)
+def main(data_file, sep):
+    X, Y = read_data(data_file, sep, 1)
 
     model = Model()
     out0 = model.add(Input(X.shape))
     out1 = model.add(FC(out0, 8, "sigmoid"))
     out2 = model.add(FC(out1, 4, "sigmoid"))
     model.add(Output(out2, 2, "sigmoid"))
+
+    for layer in model.layers:
+        layer.show()
+
+
 
 if __name__ == "__main__":
     main()

@@ -6,4 +6,4 @@ class Model(object):
 
     def add(self, layer):
         self.layers.append(layer)
-        return layer.width
+        return layer.tensor.shape[0]

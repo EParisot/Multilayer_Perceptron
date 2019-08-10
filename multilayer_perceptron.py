@@ -46,10 +46,7 @@ def main(data_file, sep):
     out2 = model.add(FC(out1, 4, "sigmoid"))
     model.add(Output(out2, 2, "sigmoid"))
 
-    for layer in model.layers:
-        layer.show()
-
-
+    model.show()
 
 if __name__ == "__main__":
     main()

@@ -14,8 +14,19 @@ def read_data(data_file, sep, labels_col_idx):
     X = data[1:labels_col_idx] + data[labels_col_idx+1:]
     X = normalise(X)
     Y = data[labels_col_idx]
-    Y = str_to_int(Y)
+    Y, nb_class = str_to_int(Y)
+    Y = to_categorical(Y, nb_class)
     return X, Y
+
+def to_categorical(Y, nb_class):
+    values = range(nb_class)
+    cat_Y = []
+    for i, elem in enumerate(Y):
+        if elem in values:
+            cat_Y.append(np.zeros(nb_class))
+            cat_Y[i][values.index(elem)] = 1
+    return np.array(cat_Y)
+
 
 def normalise(X):
     norm_X = []
@@ -32,7 +43,7 @@ def str_to_int(Y):
             uniques.append(elem)
     for i, elem in enumerate(Y):
         Y[i] = uniques.index(elem)
-    return np.array(Y)
+    return np.array(Y), len(uniques)
 
 @click.command()
 @click.argument("data_file", default="data.csv", type=click.Path(exists=True))

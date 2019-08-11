@@ -14,8 +14,15 @@ class Model(object):
     
     def train(self, X, Y, batch_size=32, epochs=1):
         for epoch in range(epochs):
-            for batch in range(0, X.shape[1], batch_size):
-                for data in X[:, batch : batch + batch_size]:
-                    for elem in data:
-                        pass#print(elem)
-
+            for batch_idx in range(0, X.shape[1], batch_size):
+                # feedforward
+                batch = X[:, batch_idx : batch_idx + batch_size]
+                for j in range(len(batch[0])):
+                    for i, layer in enumerate(self.layers):
+                        if isinstance(layer, Input):
+                            layer.feedforward(batch[:, j])
+                        else:
+                            layer.feedforward(self.layers[i - 1].tensor)
+            print(self.layers[-1].tensor)
+                # backpropagation
+                

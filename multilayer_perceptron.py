@@ -11,7 +11,7 @@ def read_data(data_file, sep, labels_col_idx):
                 data = [[] for elem in line.split(sep)]
             for i, feat in enumerate(line.split(sep)):
                 data[i].append(feat[:-1] if feat.endswith("\n") else feat)
-    X = data[:labels_col_idx] + data[labels_col_idx+1:]
+    X = data[1:labels_col_idx] + data[labels_col_idx+1:]
     X = normalise(X)
     Y = data[labels_col_idx]
     Y = str_to_int(Y)
@@ -41,10 +41,11 @@ def main(data_file, sep):
     X, Y = read_data(data_file, sep, 1)
 
     model = Model()
-    out0 = model.add(Input(X.shape))
+    out0 = model.add(Input(X.shape, "sigmoid"))
     out1 = model.add(FC(out0, 8, "sigmoid"))
-    out2 = model.add(FC(out1, 4, "sigmoid"))
-    model.add(Output(out2, 2, "sigmoid"))
+    out2 = model.add(FC(out1, 8, "sigmoid"))
+    out3 = model.add(FC(out2, 4, "sigmoid"))
+    model.add(Output(out3, 2, "sigmoid"))
 
     model.show()
 

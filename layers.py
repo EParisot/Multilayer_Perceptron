@@ -19,7 +19,7 @@ class Input(object):
         self.tensor = np.zeros(self.features + 1)
         self.tensor[0] = 1.0
         for i, elem in enumerate(X):
-            self.tensor[1+i] = np.array(elem)
+            self.tensor[1+i] = elem
         scalar_prod = np.dot(self.tensor, self.weights)
         self.tensor = self.activation(scalar_prod)
 

@@ -11,7 +11,7 @@ class Model(object):
 
     def add(self, layer):
         self.layers.append(layer)
-        return layer.tensor.shape[0]
+        return layer.layer_in.shape[0]
     
     def train(self, X, Y, batch_size=32, epochs=1, lr=0.1):
         for _ in range(epochs):
@@ -27,10 +27,10 @@ class Model(object):
                         if isinstance(layer, Input):
                             layer.feedforward(batch[:, j])
                         else:
-                            layer.feedforward(self.layers[i - 1].tensor)
+                            layer.feedforward(self.layers[i - 1].layer_out)
                     # calc step error
-                    loss_1 = Y[batch_idx + j] * np.log(self.layers[-1].tensor)
-                    loss_2 = (1 - Y[batch_idx + j]) * np.log(1 - self.layers[-1].tensor)
+                    loss_1 = Y[batch_idx + j] * np.log(self.layers[-1].layer_out)
+                    loss_2 = (1 - Y[batch_idx + j]) * np.log(1 - self.layers[-1].layer_out)
                     step_loss = -np.mean(loss_1 + loss_2)
                     batch_loss.append(step_loss)
                 # calc batch error

@@ -24,9 +24,6 @@ class Input(object):
             self.layer_in[1+i] = elem
         self.layer_out = self.activation(np.dot(self.layer_in, self.weights))
 
-    def gradient_descent(self, X, Y, lr):
-        pass
-
 class FC(object):
     def __init__(self, in_shape, width, activation):
         self.width = width
@@ -47,10 +44,13 @@ class FC(object):
         self.layer_in[0] = 1.0
         for i in range(self.width):
             self.layer_in[1+i] = X
-        self.scalar_prod = self.activation(np.dot(self.layer_in, self.weights))
+        self.layer_out = self.activation(np.dot(self.layer_in, self.weights))
     
     def gradient_descent(self, prev_layer, Y, lr):
-        pass
+        dy = (prev_layer.layer_out - Y) / (prev_layer.layer_out * (1 - prev_layer.layer_out))
+        dx = gradients_dict[self.act_name](dy, prev_layer.layer_out)
+        dw = np.dot(dx, prev_layer.layer_in) / len(Y)
+        prev_layer.weights -= lr * dw
 
 class Output(object):
     def __init__(self, in_shape, out_dim, activation):
@@ -69,3 +69,8 @@ class Output(object):
         for i in range(self.width):
             self.layer_in[i] = X
         self.layer_out = self.activation(self.layer_in)
+
+    def gradient_descent(self, prev_layer, Y, lr):
+        dy = (prev_layer.layer_out - Y) / (prev_layer.layer_out * (1 - prev_layer.layer_out))
+        dx = gradients_dict[self.act_name](dy, prev_layer.layer_out)
+        dw = np.dot(dx, prev_layer.layer_in) / len(Y)

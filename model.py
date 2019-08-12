@@ -35,9 +35,7 @@ class Model(object):
                     batch_loss.append(step_loss)
                 # calc batch error
                 batch_loss = np.mean(batch_loss)
-                
                 # backpropagation
                 for i, layer in enumerate(reversed(self.layers)):
-                    if not isinstance(layer, Output):
-                        layer.gradient_descent(self.layers[i - 1], labels_batch, lr)
-                        
+                    if not isinstance(layer, Input):
+                        layer.gradient_descent(self.layers[len(self.layers) - 1 - i], labels_batch, lr)

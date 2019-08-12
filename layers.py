@@ -23,6 +23,9 @@ class Input(object):
         scalar_prod = np.dot(self.tensor, self.weights)
         self.tensor = self.activation(scalar_prod)
 
+    def gradient_descent(self, X, Y, lr):
+        pass
+
 class FC(object):
     def __init__(self, in_shape, width, activation):
         self.width = width
@@ -44,6 +47,9 @@ class FC(object):
             self.tensor[1+i] = X
         scalar_prod = np.dot(self.tensor, self.weights)
         self.tensor = self.activation(scalar_prod)
+    
+    def gradient_descent(self, X, Y, lr):
+        pass
 
 class Output(object):
     def __init__(self, in_shape, out_dim, activation):
@@ -66,9 +72,17 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 def relu(x):
-    return x if x > 0 else 0
+    return np.maximum(0, x)
+
+def leakyRelu(x):
+    return np.maximum(0.1 * x, x)
+
+def tanh(x):
+    return np.tanh(x)
 
 activations_dict = {
   "sigmoid": sigmoid,
-  "relu": relu
+  "relu": relu,
+  "leakyRelu": leakyRelu,
+  "tanh": tanh
 }

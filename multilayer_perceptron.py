@@ -27,7 +27,6 @@ def to_categorical(Y, nb_class):
             cat_Y[i][values.index(elem)] = 1
     return np.array(cat_Y)
 
-
 def normalise(X):
     norm_X = []
     for x in X:
@@ -60,7 +59,7 @@ def main(data_file, sep):
 
     model.show()
 
-    model.train(X, Y, batch_size=32, epochs=1)
+    model.train(X, Y, batch_size=32, epochs=1, lr=0.1)
 
 if __name__ == "__main__":
     main()

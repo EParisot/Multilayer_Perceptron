@@ -25,8 +25,8 @@ class Input(object):
         self.z = np.dot(self.layer_in, self.weights)
         self.layer_out = self.activation(self.z)
 
-    def gradient(self, next_layer, Y, lr):
-        next_layer.delta = np.dot(self.delta, self.weights) * self.deriv_act(self.z)
+    def gradient(self, prev_delta, Y, lr):
+        self.delta = np.dot(prev_delta, self.weights) * self.deriv_act(self.z)
         #self.weights -= lr * self.delta
 
 class FC(object):
@@ -53,8 +53,8 @@ class FC(object):
         self.z = np.dot(self.layer_in, self.weights)
         self.layer_out = self.activation(self.z)
     
-    def gradient(self, prev_layer, Y, lr):
-        prev_layer.delta = np.dot(self.delta, self.weights) * self.deriv_act(self.z)
+    def gradient(self, prev_delta, Y, lr):
+        self.delta = np.dot(prev_delta, self.weights) * self.deriv_act(self.z)
         #self.weights -= lr * self.delta
 
 class Output(object):
@@ -75,6 +75,3 @@ class Output(object):
         for i in range(self.width):
             self.layer_in[i] = X
         self.layer_out = self.activation(self.layer_in)
-
-    def gradient(self, prev_layer, Y, lr):
-        prev_layer.delta = (Y - self.layer_out) * self.deriv_act(self.layer_out)

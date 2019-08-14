@@ -11,10 +11,10 @@ class Model(object):
 
     def add(self, layer):
         self.layers.append(layer)
-        return layer.layer_in.shape[0]
+        return layer.width
     
     def train(self, X, Y, batch_size=32, epochs=1, lr=0.1):
-        for _ in range(epochs):
+        for epoch in range(epochs):
             for batch_idx in range(0, X.shape[1], batch_size):
                 # feedforward
                 batch_loss = []
@@ -28,6 +28,11 @@ class Model(object):
                             layer.feedforward(batch[:, j])
                         else:
                             layer.feedforward(self.layers[i - 1].layer_out)
+                    # backprop
+                    Y_hat = layer.layer_out
+                    for i, layer in enumerate(reversed(self.layers)):
+                        if not isinstance(layer, Output):
+                            layer.gradient(Y_hat, labels_batch[j], lr)
                     # calc step error
                     loss_1 = Y[batch_idx + j] * np.log(self.layers[-1].layer_out)
                     loss_2 = (1 - Y[batch_idx + j]) * np.log(1 - self.layers[-1].layer_out)
@@ -35,7 +40,4 @@ class Model(object):
                     batch_loss.append(step_loss)
                 # calc batch error
                 batch_loss = np.mean(batch_loss)
-                # backpropagation
-                for i, layer in enumerate(reversed(self.layers)):
-                    if not isinstance(layer, Input):
-                        layer.gradient_descent(self.layers[len(self.layers) - 1 - i], labels_batch, lr)
+                print(epoch, batch_loss)

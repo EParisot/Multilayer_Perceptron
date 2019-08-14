@@ -20,29 +20,25 @@ activations_dict = {
 }
 
 
-def sigmoid_gradient(dy, x):
-    y = sigmoid(x)
-    dx = dy * y * (1 - y)
+def sigmoid_deriv(x):
+    dx = x * (1 - x)
     return dx
 
-def relu_gradient(dy, x):
-    y = relu(x)
-    dx = np.multiply(dy, np.int64(y > 0))
+def relu_deriv(x):
+    dx = np.multiply(x, np.int64(x > 0))
     return dx
 
-def leakyRelu_gradient(dy, x):
-    y = leakyRelu(x)
-    dx = np.multiply(dy, np.int64(y > 0.1))
+def leakyRelu_deriv(x):
+    dx = np.multiply(x, np.int64(x > 0.1))
     return dx
 
-def tanh_gradient(dy, x):
-    y = tanh(x)
-    dx = dy * (1 - np.square(y))
+def tanh_deriv(x):
+    dx = x * (1 - np.square(x))
     return dx
 
-gradients_dict = {
-  "sigmoid": sigmoid_gradient,
-  "relu": relu_gradient,
-  "leakyRelu": leakyRelu_gradient,
-  "tanh": tanh_gradient
+derivatives_dict = {
+  "sigmoid": sigmoid_deriv,
+  "relu": relu_deriv,
+  "leakyRelu": leakyRelu_deriv,
+  "tanh": tanh_deriv
 }

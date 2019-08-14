@@ -53,13 +53,12 @@ def main(data_file, sep):
     model = Model()
     out0 = model.add(Input(X.shape, "sigmoid"))
     out1 = model.add(FC(out0, 8, "sigmoid"))
-    out2 = model.add(FC(out1, 8, "sigmoid"))
-    out3 = model.add(FC(out2, 4, "sigmoid"))
-    model.add(Output(out3, 2, "sigmoid"))
+    out2 = model.add(FC(out1, 4, "sigmoid"))
+    model.add(Output(out2, 2, "sigmoid"))
 
     model.show()
 
-    model.train(X, Y, batch_size=32, epochs=1, lr=0.1)
+    model.train(X, Y, batch_size=1, epochs=5, lr=0.1)
 
 if __name__ == "__main__":
     main()

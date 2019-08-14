@@ -11,6 +11,7 @@ class Input(object):
         self.layer_in = np.zeros(self.width)
         self.z = np.zeros(self.width)
         self.layer_out = np.zeros(self.width)
+        self.delta = None
     
     def show(self):
         print("Input             : %s features,    activation : %s" % (self.width, self.act_name))
@@ -24,9 +25,9 @@ class Input(object):
         self.z = np.dot(self.layer_in, self.weights)
         self.layer_out = self.activation(self.z)
 
-    def gradient(self, Y, Y_hat, lr):
-        self.err = (self.layer_in * self.weights) * self.deriv_act(self.layer_out)
-        self.weights -= lr * self.err * self.layer_in
+    def gradient(self, next_layer, Y, lr):
+        next_layer.delta = np.dot(self.delta, self.weights) * self.deriv_act(self.z)
+        #self.weights -= lr * self.delta
 
 class FC(object):
     def __init__(self, in_shape, width, activation):
@@ -38,6 +39,7 @@ class FC(object):
         self.layer_in = np.zeros(self.width)
         self.z = np.zeros(self.width)
         self.layer_out = np.zeros(self.width)
+        self.delta = None
     
     def show(self):
         print("FullyConnected    : %s perceptrons, activation : %s" % (self.width, self.act_name))
@@ -51,9 +53,9 @@ class FC(object):
         self.z = np.dot(self.layer_in, self.weights)
         self.layer_out = self.activation(self.z)
     
-    def gradient(self, Y_hat, Y, lr):
-        self.err = (self.layer_in * self.weights) * self.deriv_act(self.layer_out)
-        self.weights -= lr * self.err * self.layer_in
+    def gradient(self, prev_layer, Y, lr):
+        prev_layer.delta = np.dot(self.delta, self.weights) * self.deriv_act(self.z)
+        #self.weights -= lr * self.delta
 
 class Output(object):
     def __init__(self, in_shape, out_dim, activation):
@@ -73,3 +75,6 @@ class Output(object):
         for i in range(self.width):
             self.layer_in[i] = X
         self.layer_out = self.activation(self.layer_in)
+
+    def gradient(self, prev_layer, Y, lr):
+        prev_layer.delta = (Y - self.layer_out) * self.deriv_act(self.layer_out)

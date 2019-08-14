@@ -58,7 +58,7 @@ def main(data_file, sep):
 
     model.show()
 
-    model.train(X, Y, batch_size=1, epochs=5, lr=0.1)
+    model.train(X, Y, batch_size=1, epochs=500, lr=0.3)
 
 if __name__ == "__main__":
     main()

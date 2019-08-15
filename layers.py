@@ -46,4 +46,4 @@ class FC(object):
     def backprop(self, prev_layer, deltas, lr):
         for neuron in range(self.width):
             self.deltas = np.dot(deltas, self.weights.T[neuron]) * self.deriv_act(prev_layer.layer_out)
-            self.weights[neuron] -= lr * self.deltas * self.layer_in
+            #self.weights[neuron] -= lr * self.deltas * self.layer_in

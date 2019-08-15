@@ -88,11 +88,11 @@ class NeuralNetwork(object):
 
 if __name__=='__main__':
     import matplotlib.pyplot as plt
-    nn = NeuralNetwork([1, 100, 1],activations=['sigmoid', 'sigmoid'])
+    nn = NeuralNetwork([1, 8, 4, 1],activations=['sigmoid', 'sigmoid', 'sigmoid'])
     X = 2*np.pi*np.random.rand(1000).reshape(1, -1)
     y = np.sin(X)
     
-    nn.train(X, y, epochs=10000, batch_size=64, lr = .1)
+    nn.train(X, y, epochs=1000, batch_size=64, lr = .1)
     _, a_s = nn.feedforward(X)
     #print(y, X)
     plt.scatter(X.flatten(), y.flatten())

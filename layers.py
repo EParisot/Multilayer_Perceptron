@@ -16,12 +16,12 @@ class Input(object):
             self.layer_out[1+i] = elem
 
 class FC(object):
-    def __init__(self, in_shape, width, activation, use_bias=True):
+    def __init__(self, in_shape, width, activation, is_last=False):
         self.act_name = activation
         self.activation = activations_dict[activation]
         self.deriv_act = derivatives_dict[activation]
-        self.use_bias = use_bias
-        if use_bias == True:
+        self.is_last = is_last
+        if is_last == False:
             self.width = width + 1
         else:
             self.width = width
@@ -29,7 +29,7 @@ class FC(object):
         self.weights = np.random.random_sample((self.width, self.in_shape))
         self.z = np.zeros((self.width,))
         self.layer_out = np.zeros((self.width,))
-        self.delta = None
+        self.deltas = np.zeros((self.width, self.in_shape))
     
     def show(self):
         print("FullyConnected    : %s perceptrons, activation : %s" % (self.width, self.act_name))
@@ -38,9 +38,12 @@ class FC(object):
         print(self.layer_out.shape)
     
     def feedforward(self, X):
+        self.layer_in = X
         for neuron in range(self.width):
             self.z[neuron] = np.dot(X, self.weights[neuron])
             self.layer_out[neuron] = self.activation(self.z[neuron])
     
-    def backprop(self, Y):
-        pass
+    def backprop(self, prev_layer, deltas, lr):
+        for neuron in range(self.width):
+            self.deltas = np.dot(deltas, self.weights.T[neuron]) * self.deriv_act(prev_layer.layer_out)
+            self.weights[neuron] -= lr * self.deltas * self.layer_in

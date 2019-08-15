@@ -29,10 +29,11 @@ class Model(object):
                         else:
                             layer.feedforward(self.layers[i - 1].layer_out)
                     # backprop
-                    for i, layer in enumerate(reversed(self.layers)):
-                        if not isinstance(layer, Input):
-                            layer.backprop(labels_batch[:, j])
-                    exit(0)
+                    deltas = np.dot(labels_batch[j], layer.layer_out) * layer.deriv_act(layer.layer_out)
+                    for layer in reversed(range(len(self.layers))):
+                        if not isinstance(self.layers[layer], Input):
+                            self.layers[layer].backprop(self.layers[layer - 1], deltas, lr)
+                            deltas = self.layers[layer].deltas
                     # calc step error
                     loss_1 = Y[batch_idx + j] * np.log(self.layers[-1].layer_out)
                     loss_2 = (1 - Y[batch_idx + j]) * np.log(1 - self.layers[-1].layer_out)

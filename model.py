@@ -29,6 +29,9 @@ class Model(object):
                         else:
                             layer.feedforward(self.layers[i - 1].layer_out)
                     # backprop
+                    for i, layer in enumerate(reversed(self.layers)):
+                        if not isinstance(layer, Input):
+                            layer.backprop(labels_batch[:, j])
                     exit(0)
                     # calc step error
                     loss_1 = Y[batch_idx + j] * np.log(self.layers[-1].layer_out)

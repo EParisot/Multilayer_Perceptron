@@ -2,7 +2,7 @@ import click
 from math import isnan
 import numpy as np
 from model import Model
-from layers import Input, Output, FC
+from layers import Input, FC
 
 def read_data(data_file, sep, labels_col_idx):
     with open(data_file, mode="r") as f:
@@ -51,10 +51,10 @@ def main(data_file, sep):
     X, Y = read_data(data_file, sep, 1)
 
     model = Model()
-    out0 = model.add(Input(X.shape, "sigmoid"))
+    out0 = model.add(Input(X.shape))
     out1 = model.add(FC(out0, 8, "sigmoid"))
     out2 = model.add(FC(out1, 4, "sigmoid"))
-    model.add(Output(out2, 2, "sigmoid"))
+    out3 = model.add(FC(out2, 2, "sigmoid", use_bias=False))
 
     model.show()
 

@@ -1,4 +1,4 @@
-from layers import Input, Output
+from layers import Input
 import numpy as np
 
 class Model(object):
@@ -29,11 +29,7 @@ class Model(object):
                         else:
                             layer.feedforward(self.layers[i - 1].layer_out)
                     # backprop
-                    out_delta = (labels_batch[j] - self.layers[-1].layer_out) * self.layers[-1].deriv_act(self.layers[-1].layer_out)
-                    for i, layer in enumerate(reversed(self.layers)):
-                        if not isinstance(layer, Output):
-                            layer.gradient(out_delta, labels_batch[j], lr)
-                            out_delta = layer.delta
+                    exit(0)
                     # calc step error
                     loss_1 = Y[batch_idx + j] * np.log(self.layers[-1].layer_out)
                     loss_2 = (1 - Y[batch_idx + j]) * np.log(1 - self.layers[-1].layer_out)

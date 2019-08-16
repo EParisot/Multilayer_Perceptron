@@ -29,7 +29,7 @@ class Model(object):
                         else:
                             layer.feedforward(self.layers[i - 1].layer_out)
                     # backprop
-                    deltas = np.dot(labels_batch[j], layer.layer_out) * layer.deriv_act(layer.layer_out)
+                    deltas = (labels_batch[j] - layer.layer_out) * layer.deriv_act(layer.layer_out)
                     for layer in reversed(range(len(self.layers))):
                         if not isinstance(self.layers[layer], Input):
                             self.layers[layer].backprop(self.layers[layer - 1], deltas, lr)
@@ -41,4 +41,4 @@ class Model(object):
                     batch_loss.append(step_loss)
                 # calc batch error
                 batch_loss = np.mean(batch_loss)
-                print(epoch, batch_loss)
+                print(epoch, batch_loss, Y[batch_idx])

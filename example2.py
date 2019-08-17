@@ -130,8 +130,8 @@ def backward_propagate_error(network, expected):
         for j in range(len(layer)):
             neuron = layer[j]
             neuron['delta'] = errors[j] * transfer_derivative(neuron['output'])
-            print(neuron['delta'])
-        print()
+        
+        print(i, layer)
     exit(0)
 
 # Update network weights with error

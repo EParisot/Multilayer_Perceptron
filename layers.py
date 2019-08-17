@@ -29,23 +29,27 @@ class FC(object):
         self.weights = np.random.random_sample((self.width, self.in_shape))
         self.z = np.zeros((self.width,))
         self.layer_out = np.zeros((self.width,))
-        self.deltas = np.zeros((self.width, self.in_shape))
+        self.deltas = np.zeros((self.width,))
     
     def show(self):
         print("FullyConnected    : %s perceptrons, activation : %s" % (self.width, self.act_name))
         print(self.in_shape)
         print(self.weights.shape)
+        print(self.deltas.shape)
         print(self.layer_out.shape)
     
     def feedforward(self, X):
         self.layer_in = X
         for neuron in range(self.width):
-            self.z[neuron] = np.dot(X, self.weights[neuron])
+            self.z[neuron] = np.dot(self.layer_in, self.weights[neuron])
             self.layer_out[neuron] = self.activation(self.z[neuron])
     
-    def backprop(self, prev_layer, deltas, lr):
-        for neuron in range(self.width):
-            self.deltas = np.dot(deltas[neuron], self.weights[neuron]) * self.deriv_act(prev_layer.layer_out)
-            self.weights[neuron] += lr * self.deltas
+    def backprop(self, Y):
+        if self.is_last == True:
+            self.deltas = (Y - self.layer_out) * self.deriv_act(self.layer_out)
+        else:
+            self.deltas = np.dot(Y.deltas, Y.weights) * self.deriv_act(self.layer_out)
+        
+
 
         

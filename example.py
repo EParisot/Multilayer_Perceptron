@@ -9,6 +9,8 @@ class NeuralNetwork(object):
         for i in range(len(layers)-1):
             self.weights.append(np.random.randn(layers[i+1], layers[i]))
             self.biases.append(np.random.randn(layers[i+1], 1))
+        print(self.weights)
+        exit(0)
     
     def feedforward(self, x):
         # return the feedforward value for x

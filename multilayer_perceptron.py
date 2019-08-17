@@ -54,11 +54,11 @@ def main(data_file, sep):
     out0 = model.add(Input(X.shape))
     out1 = model.add(FC(out0, 8, "sigmoid"))
     out2 = model.add(FC(out1, 4, "sigmoid"))
-    out3 = model.add(FC(out2, 2, "sigmoid", is_last=True))
+    out3 = model.add(FC(out2, 2, "softmax", is_last=True))
 
     model.show()
 
-    model.train(X, Y, batch_size=1, epochs=20, lr=0.1)
+    model.train(X, Y, batch_size=32, epochs=20, lr=0.1)
 
 if __name__ == "__main__":
     main()

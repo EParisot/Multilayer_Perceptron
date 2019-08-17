@@ -12,11 +12,15 @@ def leakyRelu(x):
 def tanh(x):
     return np.tanh(x)
 
+def softmax(x):
+  return np.exp(x) / np.sum(np.exp(x))
+
 activations_dict = {
   "sigmoid": sigmoid,
   "relu": relu,
   "leakyRelu": leakyRelu,
-  "tanh": tanh
+  "tanh": tanh,
+  "softmax": softmax
 }
 
 

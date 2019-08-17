@@ -20,7 +20,8 @@ class FC(object):
     def __init__(self, in_shape, width, activation, is_last=False):
         self.act_name = activation
         self.activation = activations_dict[activation]
-        #self.deriv_act = derivatives_dict[activation]
+        if self.act_name != "softmax":
+            self.deriv_act = derivatives_dict[activation]
         self.is_last = is_last
         if is_last == False:
             self.width = width + 1

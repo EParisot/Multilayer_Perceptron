@@ -1,6 +1,8 @@
 import numpy as np
 from activations import activations_dict, derivatives_dict
 
+np.seed = 42
+
 class Input(object):
     def __init__(self, in_shape):
         self.width = in_shape[0]

@@ -16,7 +16,7 @@ class Model(object):
     def train(self, X, Y, batch_size=32, epochs=1, lr=0.1):
         for epoch in range(epochs):
             for batch_idx in range(0, X.shape[1], batch_size):
-                batch = X[:, batch_idx : batch_idx + batch_size]
+                batch = X[:, batch_idx : batch_idx + batch_size].T
                 batch_labels = Y[batch_idx : batch_idx + batch_size]
 
                 for layer in self.layers:
@@ -25,7 +25,7 @@ class Model(object):
                 batch_loss = []
 
                 # loop over batch
-                for i, row in enumerate(batch.T):
+                for i, row in enumerate(batch):
                     # feedforward
                     for j, layer in enumerate(self.layers):
                         if isinstance(layer, Input):
@@ -60,8 +60,8 @@ class Model(object):
                 # update weights
                 for j, layer in enumerate(self.layers):
                     if not isinstance(layer, Input):
-                        layer.weights -= lr * np.mean(layer.w_gradients, axis=0)
-                        layer.biases -= lr * np.mean(layer.b_gradients, axis=0)
+                        layer.weights -= lr * np.mean(layer.w_gradients)
+                        layer.biases -= lr * np.mean(layer.b_gradients)
 
                 batch_loss = np.mean(batch_loss)
                 print(batch_loss)

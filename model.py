@@ -20,7 +20,8 @@ class Model(object):
                 batch_labels = Y[batch_idx : batch_idx + batch_size]
 
                 for layer in self.layers:
-                    layer.gradients = []
+                    layer.w_gradients = []
+                    layer.b_gradients = []
                 batch_loss = []
 
                 # loop over batch
@@ -31,7 +32,7 @@ class Model(object):
                             layer.layer_out = row
                         else:
                             layer.layer_in = self.layers[j - 1].layer_out
-                            layer.z = np.dot(layer.layer_in, layer.weights.T)
+                            layer.z = np.dot(layer.layer_in, layer.weights.T) + layer.biases
                             layer.layer_out = layer.activation(layer.z)
 
                     # calc step error
@@ -53,12 +54,14 @@ class Model(object):
                     # compute gradients
                     for j, layer in enumerate(self.layers):
                         if not isinstance(layer, Input):
-                            layer.gradients.append(np.outer(layer.deltas, self.layers[j-1].layer_out))
+                            layer.w_gradients.append(np.outer(layer.deltas, self.layers[j-1].layer_out))
+                            layer.b_gradients.append(layer.deltas)
 
                 # update weights
                 for j, layer in enumerate(self.layers):
                     if not isinstance(layer, Input):
-                        layer.weights -= lr * np.mean(layer.gradients, axis=0)
+                        layer.weights -= lr * np.mean(layer.w_gradients, axis=0)
+                        layer.biases -= lr * np.mean(layer.b_gradients, axis=0)
 
                 batch_loss = np.mean(batch_loss)
                 print(batch_loss)

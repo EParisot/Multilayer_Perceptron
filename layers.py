@@ -19,6 +19,7 @@ class FC(object):
         if self.act_name != "softmax":
             self.deriv_act = derivatives_dict[activation]
         self.weights = np.random.random_sample((self.width, self.in_shape))
+        self.biases = np.random.random_sample(self.width)
         self.z = np.zeros(self.width)
         self.layer_out = np.zeros(self.width)
     

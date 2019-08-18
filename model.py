@@ -59,6 +59,6 @@ class Model(object):
                 for j, layer in enumerate(self.layers):
                     if not isinstance(layer, Input):
                         layer.weights -= lr * np.mean(layer.gradients, axis=0)
-                    
-                batch_los = np.mean(batch_loss)
-                print(batch_los)
+
+                batch_loss = np.mean(batch_loss)
+                print(batch_loss)

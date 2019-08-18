@@ -13,10 +13,7 @@ def tanh(x):
     return np.tanh(x)
 
 def softmax(x):
-  ret = []
-  for elem in x:
-    ret.append(np.exp(elem) / np.sum(np.exp(elem)))
-  return np.array(ret)
+  return np.exp(x) / np.sum(np.exp(x))
 
 activations_dict = {
   "sigmoid": sigmoid,

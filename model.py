@@ -24,18 +24,13 @@ class Model(object):
                 batch_loss = []
 
                 # loop over batch
-                for i, row in enumerate(batch.T): # TO REMOVE
+                for i, row in enumerate(batch.T):
                     # feedforward
                     for j, layer in enumerate(self.layers):
                         if isinstance(layer, Input):
-                            layer.layer_out = np.zeros(layer.width)
-                            layer.layer_out[0] = 1.
-                            for k, val in enumerate(row):
-                                layer.layer_out[k+1] = val
+                            layer.layer_out = row
                         else:
                             layer.layer_in = self.layers[j - 1].layer_out
-                            if layer.is_last == False:
-                                layer.layer_in[0] = 1.
                             layer.z = np.dot(layer.layer_in, layer.weights.T)
                             layer.layer_out = layer.activation(layer.z)
 
@@ -44,7 +39,6 @@ class Model(object):
                     loss_2 = np.multiply((1 - batch_labels[i]), np.log(1 - layer.layer_out))
                     step_loss = -np.mean(loss_1 + loss_2)
                     batch_loss.append(step_loss)
-                    #print(step_loss, batch_labels[i], layer.layer_out)
 
                     # backprop
                     for layer in reversed(range(len(self.layers))):

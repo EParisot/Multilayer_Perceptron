@@ -1,8 +1,11 @@
 import click
-from math import isnan
 import numpy as np
-from model import Model
-from layers import Input, FC
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from keras.models import Model, Sequential
+from keras.layers import *
+import keras.backend as K
 
 def read_data(data_file, sep, labels_col_idx):
     with open(data_file, mode="r") as f:
@@ -50,15 +53,26 @@ def str_to_int(Y):
 def main(data_file, sep):
     X, Y = read_data(data_file, sep, 1)
 
-    model = Model()
-    out0 = model.add(Input(X.shape))
-    out1 = model.add(FC(out0, 8, "sigmoid"))
-    out2 = model.add(FC(out1, 4, "sigmoid"))
-    out3 = model.add(FC(out2, 2, "softmax", is_last=True))
+    K.clear_session()
 
-    model.show()
+    inputs = Input(shape=(X.T.shape[1:]))
 
-    #model.train(X, Y, batch_size=32, epochs=200, lr=.1)
+    x = Dense(8, activation="sigmoid")(inputs)
+    x = Dense(4, activation="sigmoid")(x)
+    outputs = Dense(2, activation="softmax")(x)
+
+    model = Model(inputs=inputs, outputs=outputs)
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
+
+    model.summary()
+
+    """h = model.fit(X.T, Y, epochs=200, batch_size=32)
+
+    historydf = pd.DataFrame(h.history, index=h.epoch)
+    historydf.plot(ylim=(0,1))
+    plt.show()"""
+
+
 
 if __name__ == "__main__":
     main()

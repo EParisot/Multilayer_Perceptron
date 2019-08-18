@@ -35,11 +35,13 @@ class Model(object):
                             layer.z = np.dot(layer.layer_in, layer.weights.T) + layer.biases
                             layer.layer_out = layer.activation(layer.z)
 
+
                     # calc step error
                     loss_1 = np.multiply(batch_labels[i], np.log(layer.layer_out))
                     loss_2 = np.multiply((1 - batch_labels[i]), np.log(1 - layer.layer_out))
                     step_loss = -np.mean(loss_1 + loss_2)
                     batch_loss.append(step_loss)
+                    print(layer.layer_out, batch_labels[i])
 
                     # backprop
                     for layer in reversed(range(len(self.layers))):

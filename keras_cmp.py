@@ -58,7 +58,7 @@ def main(data_file, sep):
     inputs = Input(shape=(X.T.shape[1:]))
     x = Dense(8, activation="sigmoid")(inputs)
     x = Dense(4, activation="sigmoid")(x)
-    outputs = Dense(2, activation="softmax")(x)
+    outputs = Dense(2, activation="sigmoid")(x)
 
     model = Model(inputs=inputs, outputs=outputs)
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])

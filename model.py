@@ -15,28 +15,27 @@ class Model(object):
     
     def train(self, X, Y, batch_size=32, epochs=1, lr=0.1):
         for epoch in range(epochs):
-            for batch_idx in range(0, X.shape[1], batch_size):
-                batch = X[batch_idx : batch_idx + batch_size]
-                batch_labels = Y[batch_idx : batch_idx + batch_size]
+            # split batches
+            for batch_start in range(0, len(X), batch_size):
+                batch = X[batch_start : batch_start + batch_size]
+                batch_labels = Y[batch_start : batch_start + batch_size]
+                # init gradients
                 for layer in self.layers:
                     layer.w_gradients = []
                     layer.b_gradients = []
-                batch_loss = []
-                batch_acc = []
                 # loop over batch
                 for i, row in enumerate(batch):
                     # feedforward
                     self.feedforward(row)
-                    # calc step error
-                    batch_loss.append(self.step_error(layer, batch_labels[i]))
-                    batch_acc.append(self.step_acc(layer, batch_labels[i]))
                     # backprop
                     self.backprop(batch_labels[i])
                     # compute gradients
                     self.gradients()
                 # update weights
                 self.update_weights(lr)
-                print("Epoch : %s, loss : %s, acc : %s" % (epoch, np.mean(batch_loss), np.mean(batch_acc)))
+                #print("loss : %0.2f, acc : %0.2f" % (np.mean(batch_loss), np.mean(batch_acc)))
+            loss, acc = self.evaluate(X, Y)
+            print("Epoch %s, loss : %0.2f, acc : %0.2f" % (epoch, loss, acc))
 
     def feedforward(self, data):
         for j, layer in enumerate(self.layers):
@@ -46,19 +45,7 @@ class Model(object):
                 layer.layer_in = self.layers[j - 1].layer_out
                 layer.z = np.dot(layer.weights, layer.layer_in) + layer.biases
                 layer.layer_out = layer.activation(layer.z)
-
-    def step_error(self, last_layer, label):
-        loss_1 = np.multiply(label, np.log(last_layer.layer_out))
-        loss_2 = np.multiply((1 - label), np.log(1 - last_layer.layer_out))
-        step_loss = -np.mean(loss_1 + loss_2)
-        #print(last_layer.layer_out, label)
-        return step_loss
-
-    def step_acc(self, last_layer, label):
-        if np.argmax(last_layer.layer_out) == np.argmax(label):
-            return 1
-        else:
-            return 0
+        return layer.layer_out
 
     def backprop(self, label):
         for layer in reversed(range(len(self.layers))):
@@ -81,3 +68,21 @@ class Model(object):
             if not isinstance(layer, Input):
                 layer.weights -= lr * np.mean(layer.w_gradients)
                 layer.biases -= lr * np.mean(layer.b_gradients)
+    
+    def evaluate(self, X, Y):
+        loss = []
+        acc = []
+        for i, val in enumerate(X):
+            pred = self.feedforward(val)
+            loss.append(self.step_error(pred, Y[i]))
+            if np.argmax(pred) == np.argmax(Y[i]):
+                acc.append(1)
+            else:
+                acc.append(0)
+        return np.mean(loss), np.mean(acc)
+
+    def step_error(self, pred, label):
+        loss_1 = np.multiply(label, np.log(pred))
+        loss_2 = np.multiply((1 - label), np.log(1 - pred))
+        step_loss = -np.mean(loss_1 + loss_2)
+        return step_loss

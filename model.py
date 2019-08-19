@@ -22,19 +22,21 @@ class Model(object):
                     layer.w_gradients = []
                     layer.b_gradients = []
                 batch_loss = []
+                batch_acc = []
                 # loop over batch
                 for i, row in enumerate(batch):
                     # feedforward
                     self.feedforward(row)
                     # calc step error
                     batch_loss.append(self.step_error(layer, batch_labels[i]))
+                    batch_acc.append(self.step_acc(layer, batch_labels[i]))
                     # backprop
                     self.backprop(batch_labels[i])
                     # compute gradients
                     self.gradients()
                 # update weights
                 self.update_weights(lr)
-                print(epoch, np.mean(batch_loss))
+                print("Epoch : %s, loss : %s, acc : %s" % (epoch, np.mean(batch_loss), np.mean(batch_acc)))
 
     def feedforward(self, data):
         for j, layer in enumerate(self.layers):
@@ -49,8 +51,14 @@ class Model(object):
         loss_1 = np.multiply(label, np.log(last_layer.layer_out))
         loss_2 = np.multiply((1 - label), np.log(1 - last_layer.layer_out))
         step_loss = -np.mean(loss_1 + loss_2)
-        print(last_layer.layer_out, label)
+        #print(last_layer.layer_out, label)
         return step_loss
+
+    def step_acc(self, last_layer, label):
+        if np.argmax(last_layer.layer_out) == np.argmax(label):
+            return 1
+        else:
+            return 0
 
     def backprop(self, label):
         for layer in reversed(range(len(self.layers))):

@@ -273,4 +273,4 @@ if __name__ == '__main__':
     accuracy = net.evaluate(X, Y)
     print('Performance initiale : {:.2f}%'.format(accuracy * 100.0))
 
-    net.train(X, Y, steps=1, learning_rate=0.1, batch_size=32)
+    net.train(X, Y, steps=200, learning_rate=0.1, batch_size=32)

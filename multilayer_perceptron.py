@@ -3,8 +3,8 @@ from math import isnan
 import matplotlib.pyplot as plt
 import numpy as np
 
-from model import Model
-from layers import Input, FC
+from srcs.model import Model
+from srcs.layers import Input, FC
 
 def read_data(data_file, sep, labels_col_idx):
     with open(data_file, mode="r") as f:

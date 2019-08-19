@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from keras.models import Model, Sequential
-from keras.layers import *
+from keras.layers import Input, Dense
 import keras.backend as K
 
 def read_data(data_file, sep, labels_col_idx):
@@ -65,13 +65,11 @@ def main(data_file, sep):
 
     model.summary()
 
-    h = model.fit(X.T, Y, epochs=200, batch_size=32)
+    h = model.fit(X.T, Y, epochs=200, batch_size=32, validation_split=0.2)
 
     historydf = pd.DataFrame(h.history, index=h.epoch)
     historydf.plot(ylim=(0,1))
     plt.show()
-
-
 
 if __name__ == "__main__":
     main()

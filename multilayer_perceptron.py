@@ -72,7 +72,7 @@ def main(data_file, sep):
     plt.show()
 
     # save model
-    model.save_model("model.json")
+    model.save("model.json")
 
 if __name__ == "__main__":
     main()

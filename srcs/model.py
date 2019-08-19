@@ -108,7 +108,7 @@ class Model(object):
                 acc.append(0)
         return np.mean(loss), np.mean(acc)
     
-    def save_model(self, model_file):
+    def save(self, model_file):
         model_list = []
         for layer in self.layers[1:]:
             layer_dict = {}

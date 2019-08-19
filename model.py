@@ -1,5 +1,6 @@
 from layers import Input
 import matplotlib.pyplot as plt
+import json
 import numpy as np
 
 class Model(object):
@@ -41,11 +42,16 @@ class Model(object):
                     self.gradients()
                 # update weights
                 self.update_weights(lr, len(batch_data))
+            # eval model
             loss, acc = self.evaluate(X_train, Y_train)
             val_loss, val_acc = self.evaluate(X_val, Y_val)
+            # print / save results
             if verbose == True:
                 print("Epoch %s, loss : %0.2f, acc : %0.2f - val_loss : %0.2f, val_acc : %0.2f" % (epoch, loss, acc * 100, val_loss, val_acc * 100))
                 history[epoch] = (loss, acc, val_loss, val_acc)
+        # save model
+        self.save_model("model.json")
+        # plot results
         if verbose == True:
             plt.figure("Train history")
             plt.plot(history[:, 0], label="loss")
@@ -106,3 +112,14 @@ class Model(object):
         loss_2 = np.multiply((1 - label), np.log(1 - pred))
         step_loss = -np.mean(loss_1 + loss_2)
         return step_loss
+    
+    def save_model(self, model_file):
+        model_list = []
+        for layer in self.layers[1:]:
+            layer_dict = {}
+            layer_dict["weights"] = layer.weights.tolist()
+            layer_dict["biases"] = layer.biases.tolist()
+            layer_dict["activation"] = layer.act_name
+            model_list.append(layer_dict)
+        with open(model_file, 'w') as fp:
+            json.dump(model_list, fp)

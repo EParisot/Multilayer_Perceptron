@@ -14,13 +14,19 @@ class Model(object):
         self.layers.append(layer)
         return layer.width
     
-    def train(self, X, Y, batch_size=32, epochs=1, lr=0.1, verbose=True):
-        history = np.zeros((epochs, 2))
+    def train(self, X, Y, batch_size=32, epochs=1, lr=0.1, cross_validation=0.2, verbose=True):
+        history = np.zeros((epochs, 4))
+        # split for validation
+        val_pivot = int((1 - cross_validation) * len(X))
+        X_train = X[:val_pivot]
+        X_val = X[val_pivot:]
+        Y_train = Y[:val_pivot]
+        Y_val = Y[val_pivot:]
         for epoch in range(epochs):
             # split batches
-            for batch_start in range(0, len(X), batch_size):
-                batch_data = X[batch_start : batch_start + batch_size]
-                batch_labels = Y[batch_start : batch_start + batch_size]
+            for batch_start in range(0, len(X_train), batch_size):
+                batch_data = X_train[batch_start : batch_start + batch_size]
+                batch_labels = Y_train[batch_start : batch_start + batch_size]
                 # init gradients
                 for layer in self.layers[1:]:
                     layer.w_gradients = np.zeros((layer.weights.shape[0], layer.weights.shape[1]))
@@ -35,14 +41,17 @@ class Model(object):
                     self.gradients()
                 # update weights
                 self.update_weights(lr, len(batch_data))
-            loss, acc = self.evaluate(X, Y)
+            loss, acc = self.evaluate(X_train, Y_train)
+            val_loss, val_acc = self.evaluate(X_val, Y_val)
             if verbose == True:
-                print("Epoch %s, loss : %0.2f, acc : %0.2f" % (epoch, loss, acc*100))
-                history[epoch] = (loss, acc)
+                print("Epoch %s, loss : %0.2f, acc : %0.2f - val_loss : %0.2f, val_acc : %0.2f" % (epoch, loss, acc * 100, val_loss, val_acc * 100))
+                history[epoch] = (loss, acc, val_loss, val_acc)
         if verbose == True:
             plt.figure("Train history")
             plt.plot(history[:, 0], label="loss")
             plt.plot(history[:, 1], label="acc")
+            plt.plot(history[:, 2], label="val_loss")
+            plt.plot(history[:, 3], label="val_acc")
             plt.legend()
             plt.show()
 

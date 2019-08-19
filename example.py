@@ -1,31 +1,11 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.utils import shuffle
-from sklearn.datasets import fetch_mldata
-
-
-DATA_PATH = 'data'
 
 def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
 
-
 def sigmoid_prime(x):
     """Dérivée de la fonction sigmoid."""
     return sigmoid(x) * (1.0 - sigmoid(x))
-
-
-def to_one_hot(y, k):
-    """Convertit un entier en vecteur "one-hot".
-
-    to_one_hot(5, 10) -> (0, 0, 0, 0, 1, 0, 0, 0, 0)
-
-    """
-    one_hot = np.zeros(k)
-    one_hot[y] = 1
-    return one_hot
-
-
 
 class Layer:
     """Une seule couche de neurones."""
@@ -100,6 +80,7 @@ class Network:
     # Retourne l'index du neurone de sortie qui a la plus haute valeur, ce
     # qui revient à indiquer quelle classe est sélectionnée par le réseau.
     def predict(self, input_data):
+        #print(input_data, self.feedforward(input_data))
         return np.argmax(self.feedforward(input_data))
 
     # Évalue la performance du réseau à partir d'un set d'exemples.
@@ -116,11 +97,10 @@ class Network:
     def train(self, X, Y, steps, learning_rate, batch_size):
         n = Y.size
         for i in range(steps):
-            # Mélangeons les données parce que… parce que.
-            X, Y = shuffle(X, Y)
             for batch_start in range(0, n, batch_size):
                 X_batch, Y_batch = X[batch_start:batch_start + batch_size], Y[batch_start:batch_start + batch_size]
-                self.train_batch(X_batch, Y_batch, learning_rate)
+                if len(X_batch) > 0:
+                    self.train_batch(X_batch, Y_batch, learning_rate)
             accuracy = net.evaluate(X, Y)
             print('Nouvelle performance : {:.2f}%'.format(accuracy * 100.0))
 
@@ -262,8 +242,6 @@ def str_to_int(Y):
 if __name__ == '__main__':
 
     X, Y = read_data("data.csv", ",", 1)
-
-    print(X.shape, Y.shape)
 
     net = Network(input_dim=len(X[0]))
     net.add_layer(8)

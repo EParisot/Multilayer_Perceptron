@@ -65,11 +65,11 @@ def main(data_file, sep):
 
     model.summary()
 
-    """h = model.fit(X.T, Y, epochs=200, batch_size=32)
+    h = model.fit(X.T, Y, epochs=200, batch_size=32)
 
     historydf = pd.DataFrame(h.history, index=h.epoch)
     historydf.plot(ylim=(0,1))
-    plt.show()"""
+    plt.show()
 
 
 

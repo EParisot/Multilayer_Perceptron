@@ -16,7 +16,7 @@ class Model(object):
     def train(self, X, Y, batch_size=32, epochs=1, lr=0.1):
         for epoch in range(epochs):
             for batch_idx in range(0, X.shape[1], batch_size):
-                batch = X[:, batch_idx : batch_idx + batch_size].T
+                batch = X[batch_idx : batch_idx + batch_size]
                 batch_labels = Y[batch_idx : batch_idx + batch_size]
 
                 for layer in self.layers:
@@ -41,7 +41,7 @@ class Model(object):
                     loss_2 = np.multiply((1 - batch_labels[i]), np.log(1 - layer.layer_out))
                     step_loss = -np.mean(loss_1 + loss_2)
                     batch_loss.append(step_loss)
-                    print(layer.layer_out, batch_labels[i])
+                    #print(layer.layer_out, batch_labels[i])
 
                     # backprop
                     for layer in reversed(range(len(self.layers))):

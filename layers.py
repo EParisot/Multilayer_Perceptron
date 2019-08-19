@@ -5,7 +5,7 @@ np.seed = 42
 
 class Input(object):
     def __init__(self, in_shape):
-        self.width = in_shape[0]
+        self.width = in_shape[1]
         self.layer_out = np.zeros(self.width)
     
     def show(self):

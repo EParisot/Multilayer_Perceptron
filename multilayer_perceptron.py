@@ -13,6 +13,7 @@ def read_data(data_file, sep, labels_col_idx):
                 data[i].append(feat[:-1] if feat.endswith("\n") else feat)
     X = data[1:labels_col_idx] + data[labels_col_idx+1:]
     X = normalise(X)
+    X = X.T
     Y = data[labels_col_idx]
     Y, nb_class = str_to_int(Y)
     Y = to_categorical(Y, nb_class)

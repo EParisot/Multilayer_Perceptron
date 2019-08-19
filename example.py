@@ -102,7 +102,7 @@ class Network:
                 if len(X_batch) > 0:
                     self.train_batch(X_batch, Y_batch, learning_rate)
             accuracy = net.evaluate(X, Y)
-            print('Nouvelle performance : {:.2f}%'.format(accuracy * 100.0))
+            print('Epoch {:d}, acc : {:.2f}%'.format(i, accuracy * 100.0))
 
     # Cette fonction combine les algos du retropropagation du gradient +
     # gradient descendant.

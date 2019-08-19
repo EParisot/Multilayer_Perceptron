@@ -1,4 +1,5 @@
 from layers import Input
+import matplotlib.pyplot as plt
 import numpy as np
 
 class Model(object):
@@ -13,18 +14,19 @@ class Model(object):
         self.layers.append(layer)
         return layer.width
     
-    def train(self, X, Y, batch_size=32, epochs=1, lr=0.1):
+    def train(self, X, Y, batch_size=32, epochs=1, lr=0.1, verbose=True):
+        history = np.zeros((epochs, 2))
         for epoch in range(epochs):
             # split batches
             for batch_start in range(0, len(X), batch_size):
-                batch = X[batch_start : batch_start + batch_size]
+                batch_data = X[batch_start : batch_start + batch_size]
                 batch_labels = Y[batch_start : batch_start + batch_size]
                 # init gradients
                 for layer in self.layers:
                     layer.w_gradients = []
                     layer.b_gradients = []
                 # loop over batch
-                for i, row in enumerate(batch):
+                for i, row in enumerate(batch_data):
                     # feedforward
                     self.feedforward(row)
                     # backprop
@@ -33,9 +35,16 @@ class Model(object):
                     self.gradients()
                 # update weights
                 self.update_weights(lr)
-                #print("loss : %0.2f, acc : %0.2f" % (np.mean(batch_loss), np.mean(batch_acc)))
             loss, acc = self.evaluate(X, Y)
-            print("Epoch %s, loss : %0.2f, acc : %0.2f" % (epoch, loss, acc))
+            if verbose == True:
+                print("Epoch %s, loss : %0.2f, acc : %0.2f" % (epoch, loss, acc*100))
+                history[epoch] = (loss, acc)
+        if verbose == True:
+            plt.figure("Train history")
+            plt.plot(history[:, 0], label="loss")
+            plt.plot(history[:, 1], label="acc")
+            plt.legend()
+            plt.show()
 
     def feedforward(self, data):
         for j, layer in enumerate(self.layers):
@@ -53,9 +62,9 @@ class Model(object):
                 if self.layers[layer].is_last:
                     self.layers[layer].deltas = self.layers[layer].layer_out - label
                 else:
-                    deltas_agreg = np.dot(self.layers[layer+1].weights.T, self.layers[layer+1].deltas)
                     deltas_act = self.layers[layer].deriv_act(self.layers[layer].z)
-                    self.layers[layer].deltas = np.multiply(deltas_agreg, deltas_act)
+                    deltas_agreg = np.dot(self.layers[layer+1].weights.T, self.layers[layer+1].deltas)
+                    self.layers[layer].deltas = np.multiply(deltas_act, deltas_agreg)
     
     def gradients(self):
         for j, layer in enumerate(self.layers):

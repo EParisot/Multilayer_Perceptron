@@ -1,6 +1,7 @@
-from layers import Input
 import json
 import numpy as np
+
+from layers import Input
 
 class Model(object):
     def __init__(self):

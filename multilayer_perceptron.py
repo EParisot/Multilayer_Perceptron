@@ -2,6 +2,7 @@ import click
 from math import isnan
 import matplotlib.pyplot as plt
 import numpy as np
+
 from model import Model
 from layers import Input, FC
 

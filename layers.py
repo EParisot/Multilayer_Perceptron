@@ -1,4 +1,5 @@
 import numpy as np
+
 from activations import activations_dict, derivatives_dict
 
 #np.random.seed(42)

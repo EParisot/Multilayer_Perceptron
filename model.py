@@ -18,52 +18,58 @@ class Model(object):
             for batch_idx in range(0, X.shape[1], batch_size):
                 batch = X[batch_idx : batch_idx + batch_size]
                 batch_labels = Y[batch_idx : batch_idx + batch_size]
-
                 for layer in self.layers:
                     layer.w_gradients = []
                     layer.b_gradients = []
                 batch_loss = []
-
                 # loop over batch
                 for i, row in enumerate(batch):
                     # feedforward
-                    for j, layer in enumerate(self.layers):
-                        if isinstance(layer, Input):
-                            layer.layer_out = row
-                        else:
-                            layer.layer_in = self.layers[j - 1].layer_out
-                            layer.z = np.dot(layer.layer_in, layer.weights.T) + layer.biases
-                            layer.layer_out = layer.activation(layer.z)
-
-
+                    self.feedforward(row)
                     # calc step error
-                    loss_1 = np.multiply(batch_labels[i], np.log(layer.layer_out))
-                    loss_2 = np.multiply((1 - batch_labels[i]), np.log(1 - layer.layer_out))
-                    step_loss = -np.mean(loss_1 + loss_2)
-                    batch_loss.append(step_loss)
-                    #print(layer.layer_out, batch_labels[i])
-
+                    batch_loss.append(self.step_error(layer, batch_labels[i]))
                     # backprop
-                    for layer in reversed(range(len(self.layers))):
-                        if not isinstance(self.layers[layer], Input):
-                            if self.layers[layer].is_last:
-                                self.layers[layer].deltas = self.layers[layer].layer_out - batch_labels[i]
-                            else:
-                                deltas_agreg = np.dot(self.layers[layer+1].weights.T, self.layers[layer+1].deltas)
-                                deltas_act = self.layers[layer].deriv_act(self.layers[layer].z)
-                                self.layers[layer].deltas = np.multiply(deltas_agreg, deltas_act)
-
+                    self.backprop(batch_labels[i])
                     # compute gradients
-                    for j, layer in enumerate(self.layers):
-                        if not isinstance(layer, Input):
-                            layer.w_gradients.append(np.outer(layer.deltas, self.layers[j-1].layer_out))
-                            layer.b_gradients.append(layer.deltas)
-
+                    self.gradients()
                 # update weights
-                for j, layer in enumerate(self.layers):
-                    if not isinstance(layer, Input):
-                        layer.weights -= lr * np.mean(layer.w_gradients)
-                        layer.biases -= lr * np.mean(layer.b_gradients)
+                self.update_weights(lr)
+                print(epoch, np.mean(batch_loss))
 
-                batch_loss = np.mean(batch_loss)
-                print(batch_loss)
+    def feedforward(self, data):
+        for j, layer in enumerate(self.layers):
+            if isinstance(layer, Input):
+                layer.layer_out = data
+            else:
+                layer.layer_in = self.layers[j - 1].layer_out
+                layer.z = np.dot(layer.weights, layer.layer_in) + layer.biases
+                layer.layer_out = layer.activation(layer.z)
+
+    def step_error(self, last_layer, label):
+        loss_1 = np.multiply(label, np.log(last_layer.layer_out))
+        loss_2 = np.multiply((1 - label), np.log(1 - last_layer.layer_out))
+        step_loss = -np.mean(loss_1 + loss_2)
+        print(last_layer.layer_out, label)
+        return step_loss
+
+    def backprop(self, label):
+        for layer in reversed(range(len(self.layers))):
+            if not isinstance(self.layers[layer], Input):
+                if self.layers[layer].is_last:
+                    self.layers[layer].deltas = self.layers[layer].layer_out - label
+                else:
+                    deltas_agreg = np.dot(self.layers[layer+1].weights.T, self.layers[layer+1].deltas)
+                    deltas_act = self.layers[layer].deriv_act(self.layers[layer].z)
+                    self.layers[layer].deltas = np.multiply(deltas_agreg, deltas_act)
+    
+    def gradients(self):
+        for j, layer in enumerate(self.layers):
+            if not isinstance(layer, Input):
+                layer.w_gradients.append(np.outer(layer.deltas, self.layers[j-1].layer_out))
+                layer.b_gradients.append(layer.deltas)
+
+    def update_weights(self, lr):
+        for layer in self.layers:
+            if not isinstance(layer, Input):
+                layer.weights -= lr * np.mean(layer.w_gradients)
+                layer.biases -= lr * np.mean(layer.b_gradients)

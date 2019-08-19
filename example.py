@@ -105,7 +105,7 @@ class Network:
     # Évalue la performance du réseau à partir d'un set d'exemples.
     # Retourne un nombre entre 0 et 1.
     def evaluate(self, X, Y):
-        results = [1 if self.predict(x).all() == y.all() else 0 for (x, y) in zip(X, Y)]
+        results = [1 if self.predict(x) == np.argmax(y) else 0 for (x, y) in zip(X, Y)]
         accuracy = sum(results) / len(results)
         return accuracy
 
@@ -113,7 +113,7 @@ class Network:
     # Comme décrit dans le billet, nous allons faire tourner la
     # rétropropagation sur un certain nombre d'exemples (batch_size) avant
     # de calculer un gradient moyen, et de mettre à jour les poids.
-    def train(self, X, Y, steps=30, learning_rate=0.3, batch_size=10):
+    def train(self, X, Y, steps, learning_rate, batch_size):
         n = Y.size
         for i in range(steps):
             # Mélangeons les données parce que… parce que.
@@ -121,6 +121,8 @@ class Network:
             for batch_start in range(0, n, batch_size):
                 X_batch, Y_batch = X[batch_start:batch_start + batch_size], Y[batch_start:batch_start + batch_size]
                 self.train_batch(X_batch, Y_batch, learning_rate)
+            accuracy = net.evaluate(X, Y)
+            print('Nouvelle performance : {:.2f}%'.format(accuracy * 100.0))
 
     # Cette fonction combine les algos du retropropagation du gradient +
     # gradient descendant.
@@ -180,7 +182,7 @@ class Network:
             layer = self.layers[l]
             next_layer = self.layers[l + 1]
             activation_prime = layer.activation_prime(aggregations[l])
-            delta = activation_prime * np.dot(next_layer.weights.transpose(), delta)
+            delta = activation_prime * np.dot(next_layer.weights.T, delta)
             deltas.append(delta)
 
         # Nous sommes parti de l'avant-dernière couche pour remonter vers
@@ -271,7 +273,4 @@ if __name__ == '__main__':
     accuracy = net.evaluate(X, Y)
     print('Performance initiale : {:.2f}%'.format(accuracy * 100.0))
 
-    for i in range(30):
-        net.train(X, Y, steps=1, learning_rate=3.0)
-        accuracy = net.evaluate(X, Y)
-        print('Nouvelle performance : {:.2f}%'.format(accuracy * 100.0))
+    net.train(X, Y, steps=1, learning_rate=0.1, batch_size=32)

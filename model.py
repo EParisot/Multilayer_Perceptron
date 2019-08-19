@@ -22,9 +22,9 @@ class Model(object):
                 batch_data = X[batch_start : batch_start + batch_size]
                 batch_labels = Y[batch_start : batch_start + batch_size]
                 # init gradients
-                for layer in self.layers:
-                    layer.w_gradients = []
-                    layer.b_gradients = []
+                for layer in self.layers[1:]:
+                    layer.w_gradients = np.zeros((layer.weights.shape[0], layer.weights.shape[1]))
+                    layer.b_gradients = np.zeros((layer.biases.shape[0]))
                 # loop over batch
                 for i, row in enumerate(batch_data):
                     # feedforward
@@ -34,7 +34,7 @@ class Model(object):
                     # compute gradients
                     self.gradients()
                 # update weights
-                self.update_weights(lr)
+                self.update_weights(lr, len(batch_data))
             loss, acc = self.evaluate(X, Y)
             if verbose == True:
                 print("Epoch %s, loss : %0.2f, acc : %0.2f" % (epoch, loss, acc*100))
@@ -69,14 +69,16 @@ class Model(object):
     def gradients(self):
         for j, layer in enumerate(self.layers):
             if not isinstance(layer, Input):
-                layer.w_gradients.append(np.outer(layer.deltas, self.layers[j-1].layer_out))
-                layer.b_gradients.append(layer.deltas)
+                layer.w_gradients += np.outer(layer.deltas, self.layers[j-1].layer_out)
+                layer.b_gradients += layer.deltas
 
-    def update_weights(self, lr):
-        for layer in self.layers:
-            if not isinstance(layer, Input):
-                layer.weights -= lr * np.mean(layer.w_gradients)
-                layer.biases -= lr * np.mean(layer.b_gradients)
+    def update_weights(self, lr, batch_len):
+        for layer in self.layers[1:]:
+            avg_w_gradients = np.divide(layer.w_gradients, batch_len)
+            avg_b_gradients = np.divide(layer.b_gradients, batch_len)
+            layer.weights -= lr * avg_w_gradients
+            layer.biases -= lr * avg_b_gradients
+            
     
     def evaluate(self, X, Y):
         loss = []

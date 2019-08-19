@@ -55,7 +55,7 @@ def main(data_file, sep):
     out0 = model.add(Input(X.shape))
     out1 = model.add(FC(out0, 8, "sigmoid"))
     out2 = model.add(FC(out1, 4, "sigmoid"))
-    out3 = model.add(FC(out2, 2, "sigmoid", is_last=True))
+    _ = model.add(FC(out2, 2, "sigmoid", is_last=True))
 
     model.show()
 

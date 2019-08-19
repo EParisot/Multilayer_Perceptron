@@ -1,4 +1,5 @@
 import numpy as np
+np.random.seed(42)
 
 def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
@@ -80,7 +81,6 @@ class Network:
     # Retourne l'index du neurone de sortie qui a la plus haute valeur, ce
     # qui revient à indiquer quelle classe est sélectionnée par le réseau.
     def predict(self, input_data):
-        #print(input_data, self.feedforward(input_data))
         return np.argmax(self.feedforward(input_data))
 
     # Évalue la performance du réseau à partir d'un set d'exemples.
@@ -94,15 +94,15 @@ class Network:
     # Comme décrit dans le billet, nous allons faire tourner la
     # rétropropagation sur un certain nombre d'exemples (batch_size) avant
     # de calculer un gradient moyen, et de mettre à jour les poids.
-    def train(self, X, Y, steps, learning_rate, batch_size):
+    def train(self, X, Y, epochs, learning_rate, batch_size):
         n = Y.size
-        for i in range(steps):
+        for epoch in range(epochs):
             for batch_start in range(0, n, batch_size):
                 X_batch, Y_batch = X[batch_start:batch_start + batch_size], Y[batch_start:batch_start + batch_size]
                 if len(X_batch) > 0:
                     self.train_batch(X_batch, Y_batch, learning_rate)
             accuracy = net.evaluate(X, Y)
-            print('Epoch {:d}, acc : {:.2f}%'.format(i, accuracy * 100.0))
+            print('Epoch {:d}, acc : {:.2f}%'.format(epoch, accuracy * 100.0))
 
     # Cette fonction combine les algos du retropropagation du gradient +
     # gradient descendant.
@@ -153,7 +153,6 @@ class Network:
         target = y
         delta = self.get_output_delta(aggregation, activation, target)
         deltas = [delta]
-
         # Phase de rétropropagation pour calculer les deltas de chaque
         # couche
         # On utilise une implémentation vectorielle des équations.
@@ -193,10 +192,6 @@ class Network:
     # Cf http://neuralnetworksanddeeplearning.com/chap3.html#the_cross-entropy_cost_function
     def get_output_delta(self, z, a, target):
         return a - target
-
-
-
-
 
 
 def read_data(data_file, sep, labels_col_idx):
@@ -248,7 +243,7 @@ if __name__ == '__main__':
     net.add_layer(4)
     net.add_layer(2)
 
-    accuracy = net.evaluate(X, Y)
-    print('Performance initiale : {:.2f}%'.format(accuracy * 100.0))
+    #accuracy = net.evaluate(X, Y)
+    #print('Performance initiale : {:.2f}%'.format(accuracy * 100.0))
 
-    net.train(X, Y, steps=200, learning_rate=0.1, batch_size=32)
+    net.train(X, Y, epochs=200, learning_rate=0.1, batch_size=32)

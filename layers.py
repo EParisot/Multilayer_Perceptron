@@ -1,7 +1,7 @@
 import numpy as np
 from activations import activations_dict, derivatives_dict
 
-np.random.seed(42)
+#np.random.seed(42)
 
 class Input(object):
     def __init__(self, in_shape):

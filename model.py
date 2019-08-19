@@ -1,5 +1,4 @@
 from layers import Input
-import matplotlib.pyplot as plt
 import json
 import numpy as np
 
@@ -18,11 +17,8 @@ class Model(object):
     def train(self, X, Y, batch_size=32, epochs=1, lr=0.1, cross_validation=0.2, verbose=True):
         history = np.zeros((epochs, 4))
         # split for validation
-        val_pivot = int((1 - cross_validation) * len(X))
-        X_train = X[:val_pivot]
-        X_val = X[val_pivot:]
-        Y_train = Y[:val_pivot]
-        Y_val = Y[val_pivot:]
+        X_train, Y_train, X_val, Y_val = self.split_data(X, Y, cross_validation)
+        # run train
         for epoch in range(epochs):
             # split batches
             for batch_start in range(0, len(X_train), batch_size):
@@ -47,19 +43,18 @@ class Model(object):
             val_loss, val_acc = self.evaluate(X_val, Y_val)
             # print / save results
             if verbose == True:
-                print("Epoch %s, loss : %0.2f, acc : %0.2f - val_loss : %0.2f, val_acc : %0.2f" % (epoch, loss, acc * 100, val_loss, val_acc * 100))
+                print("Epoch %s, loss : %0.2f, acc : %0.2f - val_loss : %0.2f, val_acc : %0.2f" % 
+                        (epoch, loss, acc * 100, val_loss, val_acc * 100))
                 history[epoch] = (loss, acc, val_loss, val_acc)
-        # save model
-        self.save_model("model.json")
-        # plot results
-        if verbose == True:
-            plt.figure("Train history")
-            plt.plot(history[:, 0], label="loss")
-            plt.plot(history[:, 1], label="acc")
-            plt.plot(history[:, 2], label="val_loss")
-            plt.plot(history[:, 3], label="val_acc")
-            plt.legend()
-            plt.show()
+        return history
+    
+    def split_data(self, X, Y, cross_validation):
+        val_pivot = int((1 - cross_validation) * len(X))
+        X_train = X[:val_pivot]
+        X_val = X[val_pivot:]
+        Y_train = Y[:val_pivot]
+        Y_val = Y[val_pivot:]
+        return X_train, Y_train, X_val, Y_val
 
     def feedforward(self, data):
         for j, layer in enumerate(self.layers):
@@ -94,6 +89,11 @@ class Model(object):
             layer.weights -= lr * avg_w_gradients
             layer.biases -= lr * avg_b_gradients
             
+    def step_error(self, pred, label):
+        loss_1 = np.multiply(label, np.log(pred))
+        loss_2 = np.multiply((1 - label), np.log(1 - pred))
+        step_loss = -np.mean(loss_1 + loss_2)
+        return step_loss
     
     def evaluate(self, X, Y):
         loss = []
@@ -106,12 +106,6 @@ class Model(object):
             else:
                 acc.append(0)
         return np.mean(loss), np.mean(acc)
-
-    def step_error(self, pred, label):
-        loss_1 = np.multiply(label, np.log(pred))
-        loss_2 = np.multiply((1 - label), np.log(1 - pred))
-        step_loss = -np.mean(loss_1 + loss_2)
-        return step_loss
     
     def save_model(self, model_file):
         model_list = []
@@ -123,3 +117,4 @@ class Model(object):
             model_list.append(layer_dict)
         with open(model_file, 'w') as fp:
             json.dump(model_list, fp)
+        print("model saved in %s" % model_file)

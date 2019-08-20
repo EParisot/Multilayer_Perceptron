@@ -15,5 +15,10 @@ def main(data_file, sep):
 
     model = Model().load_model("model.json")
 
+    preds, loss, acc = model.evaluate(X, Y)
+    print("Metrics = loss : %0.2f, acc : %0.2f" % (loss, acc))
+
+    
+
 if __name__ == "__main__":
     main()

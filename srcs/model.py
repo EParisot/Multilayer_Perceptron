@@ -40,8 +40,8 @@ class Model(object):
                 # update weights
                 self.update_weights(lr, len(batch_data))
             # eval model
-            loss, acc = self.evaluate(X_train, Y_train)
-            val_loss, val_acc = self.evaluate(X_val, Y_val)
+            _, loss, acc = self.evaluate(X_train, Y_train)
+            _, val_loss, val_acc = self.evaluate(X_val, Y_val)
             # print / save results
             if verbose == True:
                 print("Epoch %s, loss : %0.2f, acc : %0.2f - val_loss : %0.2f, val_acc : %0.2f" % 
@@ -99,14 +99,16 @@ class Model(object):
     def evaluate(self, X, Y):
         loss = []
         acc = []
+        preds = []
         for i, val in enumerate(X):
             pred = self.feedforward(val)
+            preds.append(pred)
             loss.append(self.step_error(pred, Y[i]))
             if np.argmax(pred) == np.argmax(Y[i]):
                 acc.append(1)
             else:
                 acc.append(0)
-        return np.mean(loss), np.mean(acc)
+        return preds, np.mean(loss), np.mean(acc)
     
     def save(self, model_file):
         model_list = []
@@ -143,3 +145,6 @@ class Model(object):
                 else:
                     print("Error loading model %s" % model_file)
         return model
+
+    def predict(self, X):
+        return np.argmax(self.feedforward(X))

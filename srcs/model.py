@@ -1,7 +1,7 @@
 import json
 import numpy as np
 
-from srcs.layers import Input
+from srcs.layers import Input, FC
 
 class Model(object):
     def __init__(self):
@@ -110,12 +110,36 @@ class Model(object):
     
     def save(self, model_file):
         model_list = []
-        for layer in self.layers[1:]:
+        for layer in self.layers:
             layer_dict = {}
-            layer_dict["weights"] = layer.weights.tolist()
-            layer_dict["biases"] = layer.biases.tolist()
-            layer_dict["activation"] = layer.act_name
+            layer_dict["type"] = layer.type
+            layer_dict["in_shape"] = layer.width
+            if not isinstance(layer, Input):
+                layer_dict["weights"] = layer.weights.tolist()
+                layer_dict["biases"] = layer.biases.tolist()
+                layer_dict["activation"] = layer.act_name
             model_list.append(layer_dict)
         with open(model_file, 'w') as fp:
             json.dump(model_list, fp)
         print("model saved in %s" % model_file)
+
+    def load_model(self, model_file):
+        model = Model()
+        out = None
+        with open(model_file) as f:
+            data = json.load(f)
+            for j, layer in enumerate(data):
+                if j == 0 and layer["type"] == "Input":
+                    out = model.add(Input(layer["in_shape"]))
+                elif layer["type"] == "FC":
+                    if j == len(data) - 1:
+                        out = model.add(FC(out, len(layer["weights"]), layer["activation"], is_last=True))
+                        model.layers[-1].weights = layer["weights"]
+                        model.layers[-1].biases = layer["biases"]
+                    else:
+                        out = model.add(FC(out, len(layer["weights"]), layer["activation"]))
+                        model.layers[-1].weights = layer["weights"]
+                        model.layers[-1].biases = layer["biases"]
+                else:
+                    print("Error loading model %s" % model_file)
+        return model

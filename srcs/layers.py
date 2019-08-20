@@ -6,14 +6,17 @@ from srcs.activations import activations_dict, derivatives_dict
 
 class Input(object):
     def __init__(self, in_shape):
-        self.width = in_shape[1]
+        self.type = "Input"
+        self.width = in_shape
         self.layer_out = np.zeros(self.width)
+
     
     def show(self):
         print("Input             : %s features \n" % (self.width))
     
 class FC(object):
     def __init__(self, in_shape, width, activation, is_last=False):
+        self.type = "FC"
         self.in_shape = in_shape
         self.is_last = is_last
         self.width = width

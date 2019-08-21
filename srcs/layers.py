@@ -28,6 +28,8 @@ class FC(object):
         self.biases = np.random.randn(self.width)
         self.z = np.zeros(self.width)
         self.layer_out = np.zeros(self.width)
+        self.last_avg_w_grad = 0
+        self.last_avg_b_grad = 0
     
     def show(self):
         print("FullyConnected    : %s perceptrons, activation : %s" % (self.width, self.act_name))

@@ -15,7 +15,7 @@ class Model(object):
         self.layers.append(layer)
         return layer.width
     
-    def train(self, X, Y, batch_size=32, epochs=1, lr=0.1, cross_validation=0.2, verbose=True):
+    def train(self, X, Y, batch_size=32, epochs=1, lr=0.1, cross_validation=0.2, momentum=None, verbose=True):
         history = np.zeros((epochs, 4))
         # split for validation
         X_train, Y_train, X_val, Y_val = self.split_data(X, Y, cross_validation)
@@ -38,7 +38,7 @@ class Model(object):
                     # compute gradients
                     self.gradients()
                 # update weights
-                self.update_weights(lr, len(batch_data))
+                self.update_weights(lr, len(batch_data), momentum=momentum)
             # eval model
             _, loss, acc = self.evaluate(X_train, Y_train)
             _, val_loss, val_acc = self.evaluate(X_val, Y_val)
@@ -83,12 +83,19 @@ class Model(object):
                 layer.w_gradients += np.outer(layer.deltas, self.layers[j-1].layer_out)
                 layer.b_gradients += layer.deltas
 
-    def update_weights(self, lr, batch_len):
+    def update_weights(self, lr, batch_len, momentum):
         for layer in self.layers[1:]:
             avg_w_gradients = np.divide(layer.w_gradients, batch_len)
             avg_b_gradients = np.divide(layer.b_gradients, batch_len)
-            layer.weights -= lr * avg_w_gradients
-            layer.biases -= lr * avg_b_gradients
+            # update weights with Nesterov accelerated gradient
+            layer.weights -= lr * (avg_w_gradients - momentum * layer.last_avg_w_grad) + \
+                    momentum * layer.last_avg_w_grad
+            layer.biases -= lr * (avg_b_gradients - momentum * layer.last_avg_b_grad) + \
+                    momentum * layer.last_avg_b_grad
+            # save last
+            if momentum:
+                layer.last_avg_w_grad = avg_w_gradients
+                layer.last_avg_b_grad = avg_b_gradients
             
     def step_error(self, pred, label):
         loss_1 = np.multiply(label, np.log(pred))

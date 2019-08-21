@@ -22,7 +22,7 @@ def main(data_file, sep):
     model.show()
 
     # train / plot
-    history = model.train(X, Y, batch_size=32, epochs=200, cross_validation=0.2, lr=0.1)
+    history = model.train(X, Y, batch_size=32, epochs=200, cross_validation=0.2, momentum=0.1, lr=0.1)
     plt.figure("Train history")
     plt.plot(history[:, 0], label="loss")
     plt.plot(history[:, 1], label="acc")

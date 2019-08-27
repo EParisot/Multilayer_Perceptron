@@ -16,9 +16,10 @@ def main(data_file, sep):
     model = Model().load_model("model.json")
 
     preds, loss, acc = model.evaluate(X, Y)
-    print("Metrics = loss : %0.2f, acc : %0.2f" % (loss, acc))
-
-    
+    print("ID,Label")
+    for i, pred in enumerate(preds):
+        print(i, ",", np.argmax(pred))
+    print("\nMetrics = loss : %0.2f, acc : %0.2f" % (loss, acc))
 
 if __name__ == "__main__":
     main()

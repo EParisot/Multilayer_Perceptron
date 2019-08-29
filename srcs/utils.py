@@ -37,6 +37,7 @@ def str_to_int(Y):
     for elem in Y:
         if elem not in uniques:
             uniques.append(elem)
+    uniques = sorted(uniques)
     for i, elem in enumerate(Y):
         Y[i] = uniques.index(elem)
     return np.array(Y), len(uniques)
